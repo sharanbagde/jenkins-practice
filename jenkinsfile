@@ -1,0 +1,44 @@
+pieline {
+    agent any
+
+	stages {
+	   stages('prepare'){
+		steps {
+			echo 'prepare the project..'
+			sh 'chmod +x app.sh test.sh'
+		       }
+		}
+
+		stage('run application') {
+		    steps {
+			sh 'bash app.sh'
+		           }
+		}
+
+		stage('test') {
+		    steps {
+			sh 'bash test.sh'
+			   }
+		}
+
+		stage('build') {
+		     steps {
+			sh '''
+				mkdir -p build
+				echo "build completed successfully" > buils/result.txt
+			   '''
+			archiveArtifacts artifacts: 'build/result.txt'
+		     }
+		}
+	}
+
+	post {
+		success {
+			echo 'success: all pipeline stages passed!'
+		}
+		failure {
+			echo 'failed: check console output.'
+		}
+	}
+}
+
